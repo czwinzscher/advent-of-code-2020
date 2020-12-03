@@ -1,37 +1,42 @@
 module Days.Day03 (runDay) where
 
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
 import Data.Attoparsec.Text
-import Data.Void
+import qualified Data.Text as T
+import qualified Program.RunDay as R (runDay)
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = takeWhile1 (not . isEndOfLine) `sepBy` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
-
-type OutputA = Void
-
-type OutputB = Void
+type Input = [T.Text]
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+isTree :: Char -> Bool
+isTree = (==) '#'
+
+numTrees :: Input -> Int -> Int -> Int
+numTrees [] _ _ = 0
+numTrees i right down = go 0 0 0
+  where
+    go :: Int -> Int -> Int -> Int
+    go n x y =
+      let nextIndex l = (x + right) `mod` T.length l
+          nextLineIndex = y + down
+          newCount l = if isTree (T.index l (nextIndex l)) then n + 1 else n
+       in if nextLineIndex < length i
+            then
+              let nextLine = (i !! nextLineIndex)
+               in go (newCount nextLine) (nextIndex nextLine) nextLineIndex
+            else n
+
+partA :: Input -> Int
+partA i = numTrees i 3 1
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB :: Input -> Int
+partB i =
+  numTrees i 1 1 * numTrees i 3 1 * numTrees i 5 1 * numTrees i 7 1 * numTrees i 1 2
