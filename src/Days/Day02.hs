@@ -1,6 +1,6 @@
 module Days.Day02 (runDay) where
 
-import Data.Attoparsec.Text as AP
+import Data.Attoparsec.Text
 import Data.Bits (xor)
 import qualified Data.Text as T
 import qualified Program.RunDay as R (runDay)
@@ -18,7 +18,7 @@ inputParser = do
         _ <- space
         ch <- anyChar
         _ <- string ": "
-        pw <- AP.takeWhile (not . isEndOfLine)
+        pw <- takeTill isEndOfLine
         return (ch, mi, ma, pw)
 
   lineParser `sepBy` endOfLine
