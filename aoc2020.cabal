@@ -101,9 +101,16 @@ benchmark mainbench
   hs-source-dirs: benchmark
   main-is: Bench.hs
   other-modules:
+      Bench.BenchDay
       Bench.Day01
+      Bench.Day02
+      Bench.Day03
+      Bench.Day04
+      Bench.Day05
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aoc2020
+    , attoparsec
     , containers
     , criterion
+    , text

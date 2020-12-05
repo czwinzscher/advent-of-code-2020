@@ -1,4 +1,4 @@
-module Days.Day05 (runDay) where
+module Days.Day05 where
 
 import Data.Attoparsec.Text
 import Data.Foldable (find)

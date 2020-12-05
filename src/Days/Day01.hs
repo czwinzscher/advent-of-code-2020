@@ -1,4 +1,4 @@
-module Days.Day01 (runDay, partA, partB) where
+module Days.Day01 where
 
 import Data.Attoparsec.Text
 import Data.Functor ((<&>))
