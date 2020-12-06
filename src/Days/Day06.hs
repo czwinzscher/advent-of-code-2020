@@ -1,37 +1,42 @@
-module Days.Day06 (runDay) where
+module Days.Day06 where
 
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
 import Data.Attoparsec.Text
-import Data.Void
+import qualified Data.Set as S
+import qualified Data.Text as T
+import qualified Program.RunDay as R (runDay)
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
+groupParser :: Parser [T.Text]
+groupParser = takeWhile1 (not . isEndOfLine) `sepBy` endOfLine
+
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = groupParser `sepBy` string "\n\n"
 
 ------------ TYPES ------------
-type Input = Void
-
-type OutputA = Void
-
-type OutputB = Void
+type Input = [[T.Text]]
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA :: Input -> Int
+partA i =
+  sum $
+    fmap
+      ( ( fst
+            . T.foldr
+              ( \c (a, s) ->
+                  if c `S.member` s
+                    then (a, s)
+                    else (a + 1, S.insert c s)
+              )
+              (0, S.empty)
+        )
+          . T.concat
+      )
+      i
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB :: Input -> Int
+partB i =
+  sum $ S.size . foldr1 S.intersection . fmap (S.fromList . T.unpack) <$> i
