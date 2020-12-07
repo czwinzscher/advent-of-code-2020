@@ -1,37 +1,58 @@
-module Days.Day07 (runDay) where
+module Days.Day07 where
 
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
+import Control.Applicative
 import Data.Attoparsec.Text
-import Data.Void
+import Data.Functor
+import qualified Data.Map.Strict as Map
+import qualified Data.Text as T
+import qualified Program.RunDay as R (runDay)
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = do
+  let contentParser = do
+        n <- decimal
+        _ <- char ' '
+        c1 <- takeTill (' ' ==)
+        _ <- char ' '
+        c2 <- takeTill (' ' ==)
+        _ <- string " bags" <|> string " bag"
+        return (c1 <> " " <> c2, n)
+  let lineParser = do
+        c1 <- takeTill (' ' ==)
+        _ <- char ' '
+        c2 <- takeTill (' ' ==)
+        _ <- string " bags contain "
+        content <-
+          (contentParser `sepBy1` string ", ")
+            <|> (string "no other bags" $> [])
+        _ <- char '.'
+        return (c1 <> " " <> c2, content)
+
+  lineParser `sepBy` endOfLine <&> Map.fromList
 
 ------------ TYPES ------------
-type Input = Void
-
-type OutputA = Void
-
-type OutputB = Void
+type Input = Map.Map T.Text [(T.Text, Int)]
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+shinyGoldBagName :: T.Text
+shinyGoldBagName = "shiny gold"
+
+canHoldShinyGoldBag :: [(T.Text, Int)] -> Input -> Bool
+canHoldShinyGoldBag n i =
+  any
+    (\(t, _) -> t == shinyGoldBagName || canHoldShinyGoldBag (i Map.! t) i)
+    n
+
+partA :: Input -> Int
+partA i = Map.size $ Map.filter (\v -> canHoldShinyGoldBag v i) i
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+numBags :: [(T.Text, Int)] -> Input -> Int
+numBags l i = foldr (\(t, n) b -> b + n + n * numBags (i Map.! t) i) 0 l
+
+partB :: Input -> Int
+partB i = numBags (i Map.! shinyGoldBagName) i
