@@ -1,37 +1,37 @@
-module Days.Day09 (runDay) where
+module Days.Day09 where
 
+import Data.Attoparsec.Text
 import Data.List
-import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe
-import Data.Set (Set)
 import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
 import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
-import Data.Void
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = do
+  preamble <- count 25 (decimal <* endOfLine)
+  rest <- decimal `sepBy` endOfLine
+  return (preamble, rest)
 
 ------------ TYPES ------------
-type Input = Void
-
-type OutputA = Void
-
-type OutputB = Void
+type Input = ([Int], [Int])
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+isSum :: Int -> [Int] -> Bool
+isSum x xs = any (\n -> any (\m -> m /= n && x == n + m) xs) xs
+
+partA :: Input -> Int
+partA (pr@(_ : ps), (x : xs)) = if isSum x pr then partA (ps ++ [x], xs) else x
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB :: Input -> Int
+partB i@(x, y) =
+  let num = partA i
+      allNumbers = x <> y
+      subSeqs = concatMap inits . tails $ allNumbers
+      ns = sort $ fromJust $ find (\l -> sum l == num) subSeqs
+   in head ns + last ns
