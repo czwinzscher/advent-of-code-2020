@@ -1,37 +1,34 @@
-module Days.Day10 (runDay) where
+module Days.Day10 where
 
+import Data.Attoparsec.Text
 import Data.List
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.Set (Set)
 import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
 import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
-import Data.Void
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = decimal `sepBy` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
-
-type OutputA = Void
-
-type OutputB = Void
+type Input = [Int]
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA :: Input -> Int
+partA i = go (0, 0) (0 : sort i)
+  where
+    go (a, b) (x : y : ys)
+      | (y - x) == 1 = go (a + 1, b) (y : ys)
+      | (y - x) == 3 = go (a, b + 1) (y : ys)
+      | otherwise = go (a, b) (y : ys)
+    go (a, b) (_ : _) = a * (b + 1)
 
 ------------ PART B ------------
-partB :: Input -> OutputB
+partB :: Input -> Int
 partB = error "Not implemented yet!"
