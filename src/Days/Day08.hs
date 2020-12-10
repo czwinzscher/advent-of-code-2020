@@ -35,7 +35,7 @@ type Input = Map.Map Int (Instruction, Int)
 partA :: Input -> Int
 partA input = go 0 0 Set.empty
   where
-    go i n s
+    go !i !n !s
       | Set.member i s = n
       | otherwise =
         let newSet = Set.insert i s
@@ -49,7 +49,7 @@ accOnTermination :: Input -> Maybe Int
 accOnTermination input = go 0 0 Set.empty
   where
     inputSize = Map.size input
-    go i n s
+    go !i !n !s
       | i == inputSize = Just n
       | Set.member i s = Nothing
       | otherwise =

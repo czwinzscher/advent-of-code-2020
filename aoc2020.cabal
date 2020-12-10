@@ -28,6 +28,7 @@ common common-options
       NumericUnderscores
       DeriveFunctor
       DeriveFoldable
+      BangPatterns
   ghc-options:
       -Wall
       -Wincomplete-uni-patterns

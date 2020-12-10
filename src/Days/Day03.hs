@@ -23,7 +23,7 @@ numTrees [] _ _ = 0
 numTrees i right down = go 0 0 0
   where
     go :: Int -> Int -> Int -> Int
-    go n x y =
+    go !n !x !y =
       let nextIndex l = (x + right) `mod` T.length l
           nextLineIndex = y + down
           newCount l = if isTree (T.index l (nextIndex l)) then n + 1 else n
