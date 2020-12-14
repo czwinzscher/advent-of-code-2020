@@ -1,4 +1,4 @@
-module Days.Day13 (runDay) where
+module Days.Day13 where
 
 import Control.Applicative
 import Data.Attoparsec.Text
