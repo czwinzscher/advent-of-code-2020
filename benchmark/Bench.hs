@@ -11,6 +11,7 @@ import Bench.Day08
 import Bench.Day09
 import Bench.Day10
 import Bench.Day12
+import Bench.Day13
 import Criterion.Main
 
 main :: IO ()
@@ -26,4 +27,5 @@ main = do
   d9 <- benchDay09
   d10 <- benchDay10
   d12 <- benchDay12
+  d13 <- benchDay13
   defaultMain [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d12]
