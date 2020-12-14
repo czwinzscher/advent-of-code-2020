@@ -115,6 +115,7 @@ benchmark mainbench
       Bench.Day10
       Bench.Day12
       Bench.Day13
+      Bench.Day14
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aoc2020
