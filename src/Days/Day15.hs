@@ -1,37 +1,35 @@
-module Days.Day15 (runDay) where
+module Days.Day15 where
 
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
+import Data.Attoparsec.Text hiding (take)
+import qualified Data.IntMap.Strict as IntMap
 import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
-import Data.Void
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = decimal `sepBy` char ','
 
 ------------ TYPES ------------
-type Input = Void
-
-type OutputA = Void
-
-type OutputB = Void
+type Input = [Int]
 
 ------------ PART A ------------
-partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+initialState :: [Int] -> IntMap.IntMap Int
+initialState i = IntMap.fromList $ zip i [1 ..]
+
+nthNumber :: Input -> Int -> Int
+nthNumber i n = go (initialState (take (length i - 1) i)) (last i) (length i)
+  where
+    go m !cur !ind
+      | ind == n = cur
+      | otherwise = case IntMap.lookup cur m of
+        Nothing -> go (IntMap.insert cur ind m) 0 (ind + 1)
+        Just v -> let diff = ind - v in go (IntMap.insert cur ind m) diff (ind + 1)
+
+partA :: Input -> Int
+partA i = nthNumber i 2020
 
 ------------ PART B ------------
-partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB :: Input -> Int
+partB i = nthNumber i 30000000
