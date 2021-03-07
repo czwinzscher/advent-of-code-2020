@@ -37,9 +37,7 @@ common common-options
       -Wredundant-constraints
       -Wpartial-fields
       -Wcompat
-  if impl(ghc >= 8.10)
-      ghc-options:
-          - -Wunused-packages
+      -Wunused-packages
 
 library
   import: common-options
@@ -96,7 +94,7 @@ executable aoc2020-exe
     , containers
     , optparse-applicative
 
-benchmark mainbench
+benchmark aoc2020-bench
   import: common-options
   type: exitcode-stdio-1.0
   hs-source-dirs: benchmark
@@ -118,10 +116,10 @@ benchmark mainbench
       Bench.Day14
       Bench.Day15
       Bench.Day16
+      Bench.Day17
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aoc2020
     , attoparsec
-    , containers
     , criterion
     , text
