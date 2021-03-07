@@ -1,5 +1,5 @@
 resolver:
-  lts-16.24
+  lts-17.5
 
 packages:
 - .
