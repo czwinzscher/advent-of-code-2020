@@ -1,37 +1,86 @@
-module Days.Day18 (runDay) where
+module Days.Day18 where
 
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
+import Control.Applicative
 import Data.Attoparsec.Text
-import Data.Void
+import Data.List (foldl')
+import qualified Program.RunDay as R (runDay)
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
------------- PARSER ------------
+exprParser :: Parser Expr
+exprParser =
+  ( ((string "+ " *> valueParser) >>= \v -> return $ Add v)
+      <|> ((string "* " *> valueParser) >>= \v -> return $ Mul v)
+  )
+    <* skipWhile (== ' ')
+
+parenParser :: Parser [Expr]
+parenParser = do
+  _ <- char '('
+  expr <- fullExprParser
+  _ <- char ')'
+  return expr
+
+valueParser :: Parser Val
+valueParser =
+  (decimal >>= \n -> return $ V n)
+    <|> (parenParser >>= \e -> return $ P e)
+
+initialParser :: Parser Expr
+initialParser = valueParser >>= \val -> return $ Add val
+
+fullExprParser :: Parser [Expr]
+fullExprParser = do
+  i <- initialParser
+  _ <- char ' '
+  rest <- many' exprParser
+  return (i : rest)
+
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = do
+  fullExprParser `sepBy` endOfLine
 
------------- TYPES ------------
-type Input = Void
+data Val = V Int | P [Expr]
+  deriving (Show)
 
-type OutputA = Void
+data Expr = Add Val | Mul Val
+  deriving (Show)
 
-type OutputB = Void
+evalExpr :: Int -> Expr -> Int
+evalExpr n (Mul v) = n * evalVal v
+evalExpr n (Add v) = n + evalVal v
 
------------- PART A ------------
+evalVal :: Val -> Int
+evalVal (V n) = n
+evalVal (P e) = eval e
+
+eval :: [Expr] -> Int
+eval = foldl' evalExpr 0
+
+evalExprWithAddPrecedence :: ([Int], Int) -> Expr -> ([Int], Int)
+evalExprWithAddPrecedence (xs, x) (Mul v) = (x : xs, evalValWithAddPrecedence v)
+evalExprWithAddPrecedence (xs, x) (Add v) = (xs, x + evalValWithAddPrecedence v)
+
+evalValWithAddPrecedence :: Val -> Int
+evalValWithAddPrecedence (V n) = n
+evalValWithAddPrecedence (P e) = evalWithAddPrecedence e
+
+evalWithAddPrecedence :: [Expr] -> Int
+evalWithAddPrecedence i =
+  let (xs, x) = foldl' evalExprWithAddPrecedence ([], 0) i
+   in product (x : xs)
+
+type Equation = [Expr]
+
+type Input = [Equation]
+
+type OutputA = Int
+
+type OutputB = Int
+
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA i = sum $ eval <$> i
 
------------- PART B ------------
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB i = sum $ evalWithAddPrecedence <$> i
