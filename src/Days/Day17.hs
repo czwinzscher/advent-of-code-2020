@@ -25,7 +25,7 @@ neighbourRelInds :: [Int]
 neighbourRelInds = [-1, 0, 1]
 
 class Coordinate a where
-  neighbourIndices :: a -> [a]
+  neighbourIndices :: [a]
   addIndex :: a -> a -> a
 
 type Coordinate2D = (Int, Int)
@@ -35,7 +35,7 @@ type Coordinate3D = (Int, Int, Int)
 type Coordinate4D = (Int, Int, Int, Int)
 
 instance Coordinate Coordinate3D where
-  neighbourIndices _ =
+  neighbourIndices =
     [ (a, b, c)
       | a <- neighbourRelInds,
         b <- neighbourRelInds,
@@ -45,7 +45,7 @@ instance Coordinate Coordinate3D where
   addIndex (x1, y1, z1) (x2, y2, z2) = (x1 + x2, y1 + y2, z1 + z2)
 
 instance Coordinate Coordinate4D where
-  neighbourIndices _ =
+  neighbourIndices =
     [ (a, b, c, d)
       | a <- neighbourRelInds,
         b <- neighbourRelInds,
@@ -68,7 +68,7 @@ type OutputA = Int
 type OutputB = Int
 
 neighbours :: Coordinate c => c -> [c]
-neighbours c = addIndex c <$> neighbourIndices c
+neighbours c = addIndex c <$> neighbourIndices
 
 runCycle :: (Coordinate c, Ord c) => Set.Set c -> Set.Set c
 runCycle activeCubes =
